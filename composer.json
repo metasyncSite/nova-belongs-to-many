@@ -1,0 +1,37 @@
+{
+  "name": "metasync-site/nova-belongs-to-many",
+  "description": "A Laravel Nova field for searchable belongs-to-many relationships",
+  "keywords": ["laravel", "nova", "field", "belongs-to-many", "searchable"],
+  "license": "MIT",
+  "require": {
+    "php": ">=8.2",
+    "laravel/framework": "^11.0",
+    "laravel/nova": "^4.0|^5.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0|^11.0.1",
+    "mockery/mockery": "^1.5|^1.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "MetasyncSite\\NovaBelongsToMany\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MetasyncSite\\NovaBelongsToMany\\Tests\\": "tests"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "MetasyncSite\\NovaBelongsToMany\\FieldServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
