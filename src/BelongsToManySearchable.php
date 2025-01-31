@@ -137,7 +137,7 @@ class BelongsToManySearchable extends Field
             return;
         }
 
-        if ($resource->exists) {
+        if (optional($resource)->exists) {
             $this->value = $resource->{$this->relationName}()
                 ->get()
                 ->map(fn ($item) => $item->getKey())

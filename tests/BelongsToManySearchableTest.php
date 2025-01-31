@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MetasyncSite\NovaBelongsToMany\Tests;
 
+use Illuminate\Support\Collection;
+use Laravel\Nova\Nova;
 use MetasyncSite\NovaBelongsToMany\BelongsToManySearchable;
 use MetasyncSite\NovaBelongsToMany\Exception\BelongToManyException;
 use Mockery;
@@ -55,5 +57,94 @@ class BelongsToManySearchableTest extends TestCase
         $meta = $this->field->meta();
         $this->assertTrue($meta['showCreateButton']);
         $this->assertEquals('Add New', $meta['createButtonLabel']);
+    }
+
+    public function test_it_handles_empty_values()
+    {
+        $testResource = $this->createTestResource();
+        Nova::resources([$testResource]);
+
+        $this->field->relationshipConfig(
+            resourceClass: $testResource,
+            relationName: 'testRelation',
+            pivotTable: 'test_pivot',
+            foreignPivotKey: 'test_id',
+            relatedPivotKey: 'related_id'
+        );
+
+        $resource = $this->createTestModel();
+        $resource->{$this->field->attribute} = null;
+        $resource->testRelation = function () use ($resource) {
+            return $resource->belongsToMany('TestRelated');
+        };
+
+        $this->field->resolve($resource);
+
+        $this->assertEquals(0, $this->field->value);
+    }
+
+    protected function createTestModel(): object
+    {
+        return new class
+        {
+            public function belongsToMany($related): object
+            {
+                return new class
+                {
+                    public function getTable(): string
+                    {
+                        return 'test_pivot';
+                    }
+
+                    public function getForeignPivotKeyName(): string
+                    {
+                        return 'test_id';
+                    }
+
+                    public function getRelatedPivotKeyName(): string
+                    {
+                        return 'related_id';
+                    }
+
+                    public function count(): int
+                    {
+                        return 0;
+                    }
+                };
+            }
+
+            public function test_relation()
+            {
+                return $this->belongsToMany('TestRelated');
+            }
+
+            public static function all()
+            {
+                return new Collection;
+            }
+        };
+    }
+
+    protected function createTestResource(): string
+    {
+        $testResource = new class
+        {
+            public static $model;
+
+            public static function uriKey(): string
+            {
+                return 'test-resources';
+            }
+
+            public static function newModel()
+            {
+                $class = self::$model;
+
+                return new $class;
+            }
+        };
+        $testResource::$model = get_class($this->createTestModel());
+
+        return get_class($testResource);
     }
 }
