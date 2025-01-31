@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MetasyncSite\NovaBelongsToMany;
 
-use Exception;
 use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -65,10 +64,10 @@ class BelongsToManySearchable extends Field
         $this->relationName = $relationName;
         $this->displayCallback = $displayCallback;
 
-        try {
-            $currentModelClass = $this->getCurrentModelClass();
-            $currentModel = new $currentModelClass;
+        $currentModelClass = $this->getCurrentModelClass();
+        $currentModel = new $currentModelClass;
 
+        try {
             if (! $pivotTable || ! $foreignPivotKey || ! $relatedPivotKey) {
                 $pivotInfo = $this->detectPivotInfo($currentModel, $relationName, $resourceClass);
 
@@ -80,21 +79,21 @@ class BelongsToManySearchable extends Field
                 $foreignPivotKey1 = $foreignPivotKey;
                 $relatedPivotKey1 = $relatedPivotKey;
             }
-
-            $this->withMeta([
-                'resourceClass' => $resourceClass,
-                'relationName' => $relationName,
-                'pivotTable' => $pivotTable1,
-                'foreignPivotKey' => $foreignPivotKey1,
-                'relatedPivotKey' => $relatedPivotKey1,
-            ]);
-
-            return $this;
-        } catch (Exception $e) {
-            throw new BelongToManyException(
-                "Failed to configure relationship: {$e->getMessage()}"
-            );
+        } catch (BelongToManyException) {
+            $pivotTable1 = null;
+            $foreignPivotKey1 = null;
+            $relatedPivotKey1 = null;
         }
+
+        $this->withMeta([
+            'resourceClass' => $resourceClass,
+            'relationName' => $relationName,
+            'pivotTable' => $pivotTable1,
+            'foreignPivotKey' => $foreignPivotKey1,
+            'relatedPivotKey' => $relatedPivotKey1,
+        ]);
+
+        return $this;
     }
 
     /**

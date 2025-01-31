@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace MetasyncSite\NovaBelongsToMany\Traits;
 
-use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use MetasyncSite\NovaBelongsToMany\Exception\BelongToManyException;
 use Throwable;
 
 trait BelongsToManyDetection
@@ -19,16 +19,14 @@ trait BelongsToManyDetection
      * @param string $relationName Relationship name
      * @param string $resourceClass Nova Resource class of the related model
      *
-     * @throws Exception
+     * @throws BelongToManyException
      */
     protected function detectPivotInfo($resource, string $relationName, string $resourceClass): array
     {
         try {
-            // Get both model classes
             $sourceModelClass = get_class($resource);
             $targetModelClass = $resourceClass::$model;
 
-            // First try - use existing relationship if available
             if (method_exists($resource, $relationName)) {
                 $relation = $resource->{$relationName}();
 
@@ -62,7 +60,7 @@ trait BelongsToManyDetection
                 }
             }
 
-            throw new Exception(
+            throw new BelongToManyException(
                 sprintf(
                     'Could not find pivot table. Tried: %s. Models: %s, %s',
                     implode(', ', $tables),
@@ -72,7 +70,7 @@ trait BelongsToManyDetection
             );
 
         } catch (Throwable $e) {
-            throw new Exception(
+            throw new BelongToManyException(
                 "Failed to detect pivot information: {$e->getMessage()}. ".
                 'Please provide pivot details manually via relationshipConfig().'
             );

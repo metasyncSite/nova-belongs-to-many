@@ -23,19 +23,15 @@ composer require metasync-site/nova-belongs-to-many
 ```php
 use MetasyncSite\NovaBelongsToMany\BelongsToManySearchable;
 
-public function fields(NovaRequest $request)
-{
-    return [
-        BelongsToManySearchable::make('Products')
+ BelongsToManySearchable::make('Products')
             ->relationshipConfig(
                 resourceClass: ProductResource::class,
                 relationName: 'products',
             ),
     ];
-}
 ```
 
-
+### Full api
 ```php
 use MetasyncSite\NovaBelongsToMany\BelongsToManySearchable;
 
