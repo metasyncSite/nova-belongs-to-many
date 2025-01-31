@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Nova;
+use Laravel\Nova\Resource;
 use MetasyncSite\NovaBelongsToMany\Exception\BelongToManyException;
 use MetasyncSite\NovaBelongsToMany\Traits\BelongsToManyDetection;
 use MetasyncSite\NovaBelongsToMany\Traits\WithCreateBtn;
+use Override;
 use Throwable;
 
 class BelongsToManySearchable extends Field
@@ -22,7 +24,7 @@ class BelongsToManySearchable extends Field
 
     public $displayCallback;
 
-    protected ?string $resourceClass = null;
+    protected string|Resource|null $resourceClass = null;
 
     protected ?string $relationName = null;
 
@@ -49,8 +51,6 @@ class BelongsToManySearchable extends Field
      * @param string|null $foreignPivotKey Optional foreign pivot key
      * @param string|null $relatedPivotKey Optional related pivot key
      * @param callable|null $displayCallback Optional display callback
-     *
-     * @throws BelongToManyException
      */
     public function relationshipConfig(
         string $resourceClass,
@@ -64,10 +64,10 @@ class BelongsToManySearchable extends Field
         $this->relationName = $relationName;
         $this->displayCallback = $displayCallback;
 
-        $currentModelClass = $this->getCurrentModelClass();
-        $currentModel = new $currentModelClass;
-
         try {
+            $currentModelClass = $this->getCurrentModelClass();
+            $currentModel = new $currentModelClass;
+
             if (! $pivotTable || ! $foreignPivotKey || ! $relatedPivotKey) {
                 $pivotInfo = $this->detectPivotInfo($currentModel, $relationName, $resourceClass);
 
@@ -80,17 +80,14 @@ class BelongsToManySearchable extends Field
                 $relatedPivotKey1 = $relatedPivotKey;
             }
         } catch (BelongToManyException) {
-            $pivotTable1 = null;
-            $foreignPivotKey1 = null;
-            $relatedPivotKey1 = null;
         }
 
         $this->withMeta([
             'resourceClass' => $resourceClass,
             'relationName' => $relationName,
-            'pivotTable' => $pivotTable1,
-            'foreignPivotKey' => $foreignPivotKey1,
-            'relatedPivotKey' => $relatedPivotKey1,
+            'pivotTable' => $pivotTable1 ?? null,
+            'foreignPivotKey' => $foreignPivotKey1 ?? null,
+            'relatedPivotKey' => $relatedPivotKey1 ?? null,
         ]);
 
         return $this;
@@ -188,6 +185,7 @@ class BelongsToManySearchable extends Field
      *
      * @throws BelongToManyException
      */
+    #[Override]
     protected function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute): void
     {
         if (! $request->exists($requestAttribute)) {
