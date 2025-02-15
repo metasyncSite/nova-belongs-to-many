@@ -16,8 +16,8 @@ class FieldServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Nova::serving(function (ServingNova $event) {
-            Nova::script('has-many-searchable', __DIR__.'/../dist/js/field.js');
-            Nova::style('has-many-searchable', __DIR__.'/../dist/css/field.css');
+            Nova::script('belongs-to-many-searchable', __DIR__.'/../dist/js/field.js');
+            Nova::style('belongs-to-many-searchable', __DIR__.'/../dist/css/field.css');
         });
     }
 
