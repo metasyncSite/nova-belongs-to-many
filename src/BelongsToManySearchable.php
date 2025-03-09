@@ -131,7 +131,7 @@ class BelongsToManySearchable extends Field
 
         $modelClass = $this->resourceClass::$model;
 
-        if (request()->route('resource') && ! request()->route('resourceId')) {
+        if (request()->route('resource') && ! request()->route('resourceId') && request()->get('editMode') !== 'create') {
             $this->resolveForDisplay($resource, $attribute);
 
             return;

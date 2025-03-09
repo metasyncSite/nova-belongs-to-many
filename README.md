@@ -28,7 +28,6 @@ use MetasyncSite\NovaBelongsToMany\BelongsToManySearchable;
                 resourceClass: ProductResource::class,
                 relationName: 'products',
             ),
-    ];
 ```
 
 ### Full api
