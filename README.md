@@ -6,9 +6,9 @@ A Laravel Nova field that provides a searchable interface for belongs-to-many re
 
 ## Requirements
 
-- PHP 8.2+
-- Laravel 11.x
-- Laravel Nova 4.x / 5.x
+- PHP >=8.2
+- Laravel 11.x | 12.x
+- Laravel Nova 4.x | 5.x
 
 ## Installation
 
@@ -81,4 +81,3 @@ If you discover any security vulnerabilities, please email metasyncsite@gmail.co
 
 ## Credits
 - [Metasync](https://github.com/metasyncSite)
-
