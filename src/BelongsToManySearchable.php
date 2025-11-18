@@ -199,8 +199,15 @@ class BelongsToManySearchable extends Field
                 $selectedIds = [];
             }
 
-            $model->{$this->relationName}()->sync($selectedIds);
+            $selectedIds = array_filter($selectedIds, fn($id) => $id !== null);
 
+            if ($model->exists) {
+                $model->{$this->relationName}()->sync($selectedIds);
+            } else {
+                $model::saved(function ($savedModel) use ($selectedIds) {
+                    $savedModel->{$this->relationName}()->sync($selectedIds);
+                });
+            }
         } catch (Throwable $e) {
             if (config('app.debug')) {
                 Log::error('BelongsToManySearchable fillAttributeFromRequest error: '.$e->getMessage());
